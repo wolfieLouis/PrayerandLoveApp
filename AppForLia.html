@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Nuestro Rincón de Fe y Amor</title>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lato:wght@300;400;600&display=swap" rel="stylesheet"/>
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#ff0033"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="Rincón Fe"/>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0a0a0a;--dorado:#FFDDAA;
+  --u-pri:#ff0033;--u-sec:#cc0022;--u-bg:#1a0008;--u-soft:#2a0010;--u-neon:#ff003380;
+  --l-pri:#ff6eb4;--l-sec:#e0407a;--l-bg:#1a000f;--l-soft:#2a0018;--l-neon:#ff6eb480;
+  --pri:#ff6eb4;--sec:#e0407a;--soft:#2a0018;--userbg:#1a000f;--neon:#ff6eb480;
+  --card:#111111;--border:#222222;--text:#eeeeee;--subtext:#888888;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);font-family:'Lato',sans-serif;min-height:100vh;overflow-x:hidden;color:var(--text);}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;}
+.login-bg{position:absolute;inset:0;background:url('https://drive.google.com/thumbnail?id=1FE-_yg0LzLLjRi_0r0Q-5wpxEIAePVc1&sz=w800') center/cover no-repeat;
+  filter:brightness(.35);z-index:0;}
+.login-overlay{position:absolute;inset:0;background:linear-gradient(180deg,#00000088 0%,#00000099 100%);z-index:1;}
+.login-box{position:relative;z-index:2;background:rgba(0,0,0,.6);backdrop-filter:blur(20px);
+  border-radius:28px;padding:2.5rem 2rem;max-width:380px;width:100%;text-align:center;
+  border:1px solid #ffffff18;box-shadow:0 8px 40px #00000088;}
+.login-box h1{font-family:'Great Vibes',cursive;font-size:2.8rem;color:#fff;
+  margin-bottom:.2rem;text-shadow:0 0 20px var(--pri);}
+.login-box p.sub{font-size:.9rem;color:#aaa;margin-bottom:1.8rem;}
+.user-cards{display:flex;gap:1rem;justify-content:center;margin-bottom:1.5rem;}
+.user-card{flex:1;padding:1rem .5rem;border-radius:16px;border:2px solid #333;
+  cursor:pointer;transition:.3s;background:#0a0a0a;}
+.user-card.luismi:hover,.user-card.luismi.selected{border-color:var(--u-pri);background:var(--u-soft);
+  box-shadow:0 0 20px var(--u-neon);}
+.user-card.lia:hover,.user-card.lia.selected{border-color:var(--l-pri);background:var(--l-soft);
+  box-shadow:0 0 20px var(--l-neon);}
+.user-card.selected{transform:scale(1.06);}
+.user-card .avatar{font-size:2.2rem;margin-bottom:.4rem;}
+.user-card .uname{font-size:.9rem;font-weight:600;color:#ccc;}
+.pin-area{display:flex;flex-direction:column;gap:.8rem;}
+.pin-input{border:1.5px solid #333;border-radius:50px;padding:.7rem 1.4rem;
+  font-size:1rem;width:100%;outline:none;text-align:center;color:#fff;transition:.3s;
+  background:#0a0a0a;}
+.pin-input:focus{border-color:var(--pri);box-shadow:0 0 10px var(--neon);}
+.btn{padding:.75rem 2rem;border:none;border-radius:50px;cursor:pointer;
+  font-family:'Lato',sans-serif;font-size:.95rem;font-weight:600;transition:.3s;color:#fff;width:100%;
+  background:linear-gradient(135deg,var(--pri),var(--sec));
+  box-shadow:0 4px 20px var(--neon);}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 25px var(--neon);}
+.err{color:#ff6b6b;font-size:.85rem;font-style:italic;min-height:1.2em;}
+
+/* APP */
+#app{display:none;min-height:100vh;flex-direction:column;}
+#app.visible{display:flex;}
+
+/* HEADER */
+header{background:#0d0d0d;border-bottom:1px solid #1a1a1a;padding:.8rem 1.2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;}
+.header-left h2{font-family:'Great Vibes',cursive;font-size:1.6rem;color:#fff;
+  text-shadow:0 0 10px var(--pri);}
+.header-left p{font-size:.78rem;color:#666;}
+.user-badge{display:flex;align-items:center;gap:.5rem;}
+.ubdot{width:10px;height:10px;border-radius:50%;background:var(--pri);
+  box-shadow:0 0 6px var(--pri);}
+.user-badge span{font-size:.85rem;color:#888;}
+.logout-btn{background:none;border:1px solid #333;border-radius:50px;
+  padding:.3rem .9rem;font-size:.78rem;color:#666;cursor:pointer;transition:.3s;}
+.logout-btn:hover{border-color:var(--pri);color:var(--pri);}
+
+/* TABS */
+.tabs{display:flex;overflow-x:auto;gap:.5rem;padding:.8rem 1rem;
+  background:#0d0d0d;border-bottom:1px solid #1a1a1a;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:.5rem 1rem;border-radius:50px;border:1.5px solid #222;
+  background:#111;font-size:.82rem;cursor:pointer;transition:.3s;color:#666;white-space:nowrap;}
+.tab:hover{border-color:var(--pri);color:var(--pri);}
+.tab.active{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:600;
+  box-shadow:0 0 12px var(--neon);}
+
+/* MAIN */
+main{flex:1;padding:1.2rem;max-width:700px;width:100%;margin:0 auto;}
+.section{display:none;animation:fadeUp .4s ease;}
+.section.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.sec-title{font-family:'Great Vibes',cursive;font-size:2.2rem;color:#fff;
+  margin-bottom:1.2rem;text-align:center;text-shadow:0 0 15px var(--pri);}
+
+/* CARDS */
+.card{background:var(--card);border-radius:20px;padding:1.4rem;margin-bottom:1rem;
+  border:1px solid var(--border);transition:.3s;}
+.card:hover{border-color:var(--pri);box-shadow:0 0 20px var(--neon);}
+.card h3{font-size:1rem;font-weight:600;color:#aaa;margin-bottom:.6rem;}
+
+/* INPUTS */
+.input-row{display:flex;gap:.6rem;margin-bottom:1rem;}
+.txt-input{flex:1;border:1.5px solid #222;border-radius:14px;padding:.7rem 1rem;
+  font-family:'Lato',sans-serif;font-size:.92rem;color:#eee;outline:none;
+  background:#0a0a0a;transition:.3s;resize:none;}
+.txt-input:focus{border-color:var(--pri);box-shadow:0 0 8px var(--neon);}
+.txt-input::placeholder{color:#444;}
+.add-btn{padding:.7rem 1.2rem;border:none;border-radius:14px;cursor:pointer;
+  font-size:1.1rem;background:var(--pri);color:#fff;transition:.3s;flex-shrink:0;
+  box-shadow:0 0 10px var(--neon);}
+.add-btn:hover{opacity:.85;transform:scale(1.05);}
+</style>
+<style>
+/* ITEMS */
+.item{display:flex;align-items:flex-start;gap:.7rem;padding:.9rem;border-radius:14px;
+  background:#0d0d0d;margin-bottom:.6rem;border-left:3px solid var(--pri);
+  border-right:1px solid #1a1a1a;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;
+  transition:.3s;}
+.item:hover{border-left-color:var(--pri);box-shadow:0 0 15px var(--neon);}
+.item-body{flex:1;}
+.item-text{font-size:.92rem;color:#ddd;line-height:1.5;}
+.item-meta{font-size:.75rem;color:#555;margin-top:.3rem;}
+.item-who{display:inline-block;font-size:.72rem;font-weight:600;
+  padding:.1rem .6rem;border-radius:50px;margin-right:.3rem;margin-bottom:.3rem;}
+.who-luismi{background:#2a0010;color:#ff0033;border:1px solid #ff003344;}
+.who-lia{background:#2a0018;color:#ff6eb4;border:1px solid #ff6eb444;}
+.item-actions{display:flex;flex-direction:column;gap:.3rem;}
+.ico-btn{background:none;border:none;cursor:pointer;font-size:1rem;opacity:.4;transition:.3s;}
+.ico-btn:hover{opacity:1;transform:scale(1.2);}
+
+/* EDIT MODE */
+.edit-input{width:100%;border:1.5px solid var(--pri);border-radius:10px;
+  padding:.5rem .8rem;font-family:'Lato',sans-serif;font-size:.9rem;
+  color:#eee;background:#0a0a0a;outline:none;resize:none;margin-bottom:.4rem;}
+.edit-actions{display:flex;gap:.4rem;}
+.save-btn{padding:.3rem .9rem;border:none;border-radius:50px;cursor:pointer;
+  font-size:.8rem;background:var(--pri);color:#fff;transition:.3s;}
+.cancel-btn{padding:.3rem .9rem;border:1px solid #444;border-radius:50px;cursor:pointer;
+  font-size:.8rem;background:none;color:#888;transition:.3s;}
+
+/* VERSÍCULO */
+.verse-box{background:linear-gradient(135deg,#0d0d0d,#1a0010);border-radius:20px;
+  padding:1.8rem;text-align:center;margin-bottom:1.2rem;
+  border:1px solid var(--pri);box-shadow:0 0 20px var(--neon);}
+.verse-box blockquote{font-family:'Great Vibes',cursive;font-size:1.6rem;
+  color:#fff;line-height:1.6;margin-bottom:.5rem;}
+.verse-box cite{font-size:.85rem;color:#888;}
+
+/* RACHA */
+.racha-box{background:linear-gradient(135deg,#0d0d0d,#1a0010);border-radius:20px;
+  padding:1.5rem;text-align:center;margin-bottom:1rem;
+  border:1px solid var(--pri);box-shadow:0 0 20px var(--neon);}
+.racha-num{font-family:'Great Vibes',cursive;font-size:4rem;color:#fff;
+  text-shadow:0 0 20px var(--pri);}
+.racha-label{font-size:.9rem;color:#666;margin-top:.2rem;}
+.racha-btns{display:flex;gap:.8rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;}
+.racha-btn{padding:.6rem 1.4rem;border-radius:50px;border:none;cursor:pointer;
+  font-size:.9rem;font-weight:600;transition:.3s;color:#fff;}
+.rb-luismi{background:var(--u-pri);box-shadow:0 0 12px var(--u-neon);}
+.rb-lia{background:var(--l-pri);box-shadow:0 0 12px var(--l-neon);}
+.racha-btn.checked{opacity:.4;cursor:default;box-shadow:none;}
+.checks{display:flex;gap:.5rem;justify-content:center;margin-top:.8rem;font-size:1.3rem;}
+
+/* METAS */
+.meta-item{display:flex;align-items:center;gap:.8rem;padding:.9rem;border-radius:14px;
+  background:#0d0d0d;margin-bottom:.6rem;
+  border-left:3px solid var(--dorado);
+  border-right:1px solid #1a1a1a;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;}
+.meta-item input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--pri);}
+.meta-item label{font-size:.92rem;color:#ddd;flex:1;cursor:pointer;}
+.meta-item label.done{text-decoration:line-through;opacity:.4;}
+
+/* MENSAJES ALIENTO */
+.msg-item{padding:1rem;border-radius:16px;margin-bottom:.8rem;max-width:85%;}
+.msg-item.mine{background:var(--u-soft);border-bottom-right-radius:4px;
+  margin-left:auto;border:1px solid #ff003322;}
+.msg-item.mine-lia{background:var(--l-soft);border-bottom-right-radius:4px;
+  margin-left:auto;border:1px solid #ff6eb422;}
+.msg-item.theirs{background:#111;border-bottom-left-radius:4px;
+  margin-right:auto;border:1px solid #222;}
+.msg-text{font-size:.93rem;color:#ddd;line-height:1.5;}
+.msg-who{font-size:.75rem;font-weight:600;margin-bottom:.3rem;}
+
+/* DEVOCIONAL */
+.devo-card{background:linear-gradient(160deg,#0d0d0d,#1a0010);
+  border-radius:20px;padding:1.8rem;margin-bottom:1rem;
+  border:1px solid var(--pri);box-shadow:0 0 15px var(--neon);}
+.devo-title{font-family:'Great Vibes',cursive;font-size:1.8rem;color:#fff;
+  margin-bottom:.8rem;text-shadow:0 0 10px var(--pri);}
+.devo-text{font-size:.95rem;color:#aaa;line-height:1.9;font-style:italic;}
+
+/* SYNC BAR */
+.sync-bar{font-size:.75rem;color:#666;text-align:center;padding:.4rem;
+  font-style:italic;min-height:1.4em;}
+.sync-bar.ok{color:var(--pri);}
+.empty{text-align:center;color:#444;font-size:.9rem;padding:1.2rem;}
+
+/* GALERÍA */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem;margin-top:1rem;}
+.gallery-item{border-radius:14px;overflow:hidden;aspect-ratio:1;
+  border:1px solid #222;cursor:pointer;transition:.3s;position:relative;}
+.gallery-item:hover{border-color:var(--pri);box-shadow:0 0 15px var(--neon);}
+.gallery-item img{width:100%;height:100%;object-fit:cover;}
+.gallery-upload{display:flex;align-items:center;justify-content:center;
+  background:#0d0d0d;border:2px dashed #333;border-radius:14px;
+  aspect-ratio:1;cursor:pointer;transition:.3s;font-size:2rem;}
+.gallery-upload:hover{border-color:var(--pri);}
+
+@media(max-width:480px){
+  .header-left h2{font-size:1.3rem;}
+  .sec-title{font-size:1.8rem;}
+  .login-box{padding:2rem 1.5rem;}
+}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-bg"></div>
+  <div class="login-overlay"></div>
+  <div class="login-box">
+    <h1>Nuestro Rincón</h1>
+    <p class="sub">de Fe y Amor 🙏❤️🩷</p>
+    <div class="user-cards">
+      <div class="user-card luismi" id="card-luismi" onclick="selectUser('luismi')">
+        <div class="avatar">❤️</div><div class="uname">Luismi</div>
+      </div>
+      <div class="user-card lia" id="card-lia" onclick="selectUser('lia')">
+        <div class="avatar">🩷</div><div class="uname">Lía</div>
+      </div>
+    </div>
+    <div class="pin-area">
+      <input class="pin-input" type="password" id="pin-input" placeholder="Tu contraseña..." maxlength="20"/>
+      <button class="btn" onclick="doLogin()">Entrar 🕊️</button>
+      <p class="err" id="login-err"></p>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <div class="header-left">
+      <h2>Nuestro Rincón 🙏</h2>
+      <p>de Fe y Amor</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:.8rem">
+      <div class="user-badge"><div class="ubdot"></div><span id="user-label"></span></div>
+      <button class="logout-btn" onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" onclick="goTab('oracion',this)">🙏 Oración</div>
+    <div class="tab" onclick="goTab('palabra',this)">📖 Palabra</div>
+    <div class="tab" onclick="goTab('gratitud',this)">🕊️ Gratitud</div>
+    <div class="tab" onclick="goTab('aliento',this)">💌 Aliento</div>
+    <div class="tab" onclick="goTab('metas',this)">🎯 Metas</div>
+    <div class="tab" onclick="goTab('racha',this)">📊 Racha</div>
+    <div class="tab" onclick="goTab('devo',this)">✝️ Devocional</div>
+  </div>
+
+  <main>
+    <div class="sync-bar" id="sync-bar"></div>
+
+    <div class="section active" id="sec-oracion">
+      <div class="sec-title">Peticiones de Oración</div>
+      <div class="input-row">
+        <textarea class="txt-input" id="oracion-input" rows="2" placeholder="Escribe tu petición..."></textarea>
+        <button class="add-btn" onclick="addItem('oracion')">➕</button>
+      </div>
+      <div id="oracion-list"></div>
+    </div>
+
+    <div class="section" id="sec-palabra">
+      <div class="sec-title">Lectura de la Palabra</div>
+      <div class="verse-box">
+        <blockquote id="verse-text"></blockquote>
+        <cite id="verse-ref"></cite>
+      </div>
+      <div class="card">
+        <h3>📝 Mi lectura de hoy</h3>
+        <div class="input-row">
+          <textarea class="txt-input" id="palabra-input" rows="2" placeholder="¿Qué leíste? ¿Qué te habló Dios?"></textarea>
+          <button class="add-btn" onclick="addItem('palabra')">➕</button>
+        </div>
+        <div id="palabra-list"></div>
+      </div>
+    </div>
+
+    <div class="section" id="sec-gratitud">
+      <div class="sec-title">Gratitudes del Día</div>
+      <div class="input-row">
+        <input class="txt-input" id="gratitud-input" placeholder="Hoy agradezco..."/>
+        <button class="add-btn" onclick="addItem('gratitud')">➕</button>
+      </div>
+      <div id="gratitud-list"></div>
+    </div>
+
+    <div class="section" id="sec-aliento">
+      <div class="sec-title">Mensajes de Aliento</div>
+      <div id="aliento-list" style="margin-bottom:1rem;min-height:80px;"></div>
+      <div class="input-row">
+        <input class="txt-input" id="aliento-input" placeholder="Deja un mensaje de aliento..."/>
+        <button class="add-btn" onclick="addItem('aliento')">📨</button>
+      </div>
+    </div>
+
+    <div class="section" id="sec-metas">
+      <div class="sec-title">Metas Espirituales</div>
+      <div class="input-row">
+        <input class="txt-input" id="metas-input" placeholder="Nueva meta espiritual..."/>
+        <button class="add-btn" onclick="addItem('metas')">➕</button>
+      </div>
+      <div id="metas-list"></div>
+    </div>
+
+    <div class="section" id="sec-racha">
+      <div class="sec-title">Racha de Oración</div>
+      <div class="racha-box">
+        <div class="racha-num" id="racha-num">0</div>
+        <div class="racha-label">días orando juntos 🔥</div>
+        <div class="checks" id="racha-checks"></div>
+        <div class="racha-btns" id="racha-btns"></div>
+      </div>
+      <div class="card">
+        <h3>🗺️ Oraciones Respondidas</h3>
+        <div id="answered-list"></div>
+      </div>
+    </div>
+
+    <div class="section" id="sec-devo">
+      <div class="sec-title">Devocional del Día</div>
+      <div class="devo-card">
+        <div class="devo-title" id="devo-title"></div>
+        <div class="devo-text" id="devo-text"></div>
+      </div>
+      <div class="card">
+        <h3>💬 Mi reflexión</h3>
+        <div class="input-row">
+          <textarea class="txt-input" id="devo-input" rows="2" placeholder="¿Qué te dejó este devocional?"></textarea>
+          <button class="add-btn" onclick="addItem('devo')">➕</button>
+        </div>
+        <div id="devo-list"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.1.0/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.1.0/firebase-firestore-compat.min.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyCoJCMqWTAgP12-BFqi4Kwt58F0FK8J8po",
+  authDomain:"prayerprojectapp.firebaseapp.com",
+  projectId:"prayerprojectapp",
+  storageBucket:"prayerprojectapp.firebasestorage.app",
+  messagingSenderId:"527928200076",
+  appId:"1:527928200076:web:79f7ba46de2427bd3fe4a9"
+});
+const db=firebase.firestore();
+
+const USERS={
+  luismi:{pass:'luismi123',name:'Luismi',emoji:'❤️',
+    pri:'#ff0033',sec:'#cc0022',bg:'#1a0008',soft:'#2a0010',neon:'#ff003380'},
+  lia:{pass:'lia123',name:'Lía',emoji:'🩷',
+    pri:'#ff6eb4',sec:'#e0407a',bg:'#1a000f',soft:'#2a0018',neon:'#ff6eb480'}
+};
+
+const VERSES=[
+  {t:'El amor es paciente, es bondadoso, el amor no tiene envidia.',r:'1 Corintios 13:4'},
+  {t:'Confía en el Señor con todo tu corazón y no te apoyes en tu propia prudencia.',r:'Proverbios 3:5'},
+  {t:'No temas, porque yo estoy contigo; no te angusties, porque yo soy tu Dios.',r:'Isaías 41:10'},
+  {t:'El que halló esposa halló el bien y alcanzó la benevolencia del Señor.',r:'Proverbios 18:22'},
+  {t:'Sobre todo, amaos los unos a los otros profundamente.',r:'1 Pedro 4:8'},
+  {t:'Yo te amé con amor eterno; por eso te prolongué mi misericordia.',r:'Jeremías 31:3'},
+  {t:'El amor nunca deja de ser.',r:'1 Corintios 13:8'},
+];
+
+const DEVOS=[
+  {title:'La fuerza en la quietud',text:'En el silencio de la oración encontramos la voz de Dios. No siempre nos habla con estruendo, sino en el suave murmullo de la paz que sobrepasa todo entendimiento. Hoy detente un momento, cierra los ojos y escucha. Él tiene algo especial que decirte.'},
+  {title:'Amor que transforma',text:'El amor genuino no busca lo suyo, no se irrita, no guarda rencor. Cuando amamos como Dios ama, nos convertimos en reflejo de Su gracia. Hoy elige amar incluso cuando es difícil, porque en ese acto de voluntad Dios obra lo imposible.'},
+  {title:'Fe como semilla',text:'La fe no necesita ser perfecta ni enorme para mover montañas. Una semilla diminuta se convierte en árbol frondoso. Tu fe de hoy, aunque pequeña, tiene el poder de Dios detrás. No te rindas, sigue creyendo.'},
+  {title:'Juntos en Su presencia',text:'Cuando dos se reúnen en Su nombre, Él está en medio. La oración compartida en pareja es uno de los regalos más poderosos que Dios nos da. Orar juntos es construir sobre roca firme que ninguna tormenta puede derrumbar.'},
+  {title:'Gratitud como ofrenda',text:'La gratitud transforma la perspectiva. Lo que antes parecía poco, visto con ojos agradecidos se convierte en abundancia. Hoy cuenta tus bendiciones y verás que son incontables. Dios es bueno, siempre.'},
+  {title:'Esperanza renovada',text:'Las misericordias de Dios se renuevan cada mañana. Cada amanecer es una invitación a comenzar de nuevo, llenos de Su gracia y fortaleza. La esperanza en Él nunca defrauda.'},
+  {title:'El poder de la Palabra',text:'La Escritura es lámpara a nuestros pies y lumbrera en nuestro camino. En los momentos de confusión volvamos a la Palabra. En ella encontramos dirección, consuelo, amor y la voz del Padre que nos guía paso a paso.'},
+];
+
+let currentUser=null,unsubs=[];
+
+function applyTheme(u){
+  const s=document.documentElement.style,d=USERS[u];
+  s.setProperty('--pri',d.pri);s.setProperty('--sec',d.sec);
+  s.setProperty('--soft',d.soft);s.setProperty('--userbg',d.bg);
+  s.setProperty('--neon',d.neon);
+  document.querySelector('meta[name="theme-color"]').setAttribute('content',d.pri);
+}
+
+let selUser=null;
+function selectUser(u){
+  selUser=u;
+  document.querySelectorAll('.user-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('card-'+u).classList.add('selected');
+  document.getElementById('pin-input').focus();
+}
+
+function doLogin(){
+  if(!selUser){setErr('Selecciona tu perfil 💕');return;}
+  const pin=document.getElementById('pin-input').value;
+  if(pin===USERS[selUser].pass){
+    currentUser=selUser;applyTheme(currentUser);
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').classList.add('visible');
+    document.getElementById('user-label').textContent=USERS[currentUser].name;
+    initApp();
+  } else {setErr('Contraseña incorrecta 🔐');}
+}
+
+function logout(){
+  unsubs.forEach(u=>u());unsubs=[];
+  currentUser=null;selUser=null;
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('pin-input').value='';setErr('');
+  document.querySelectorAll('.user-card').forEach(c=>c.classList.remove('selected'));
+}
+
+function setErr(m){document.getElementById('login-err').textContent=m;}
+document.getElementById('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+function goTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sec-'+id).classList.add('active');
+}
+
+function setSync(m,ok=false){
+  const b=document.getElementById('sync-bar');
+  b.textContent=m;b.className='sync-bar'+(ok?' ok':'');
+  if(m)setTimeout(()=>{if(b.textContent===m)b.textContent='';},3000);
+}
+
+function whoTag(u){
+  return '<span class="item-who who-'+u+'">'+USERS[u].emoji+' '+USERS[u].name+'</span>';
+}
+function nowDate(){return new Date().toLocaleDateString('es');}
+
+function addItem(type){
+  const inp=document.getElementById(type+'-input');
+  const txt=inp.value.trim();if(!txt)return;
+  setSync('Guardando...');
+  db.collection(type).add({
+    text:txt,user:currentUser,date:nowDate(),ts:Date.now(),answered:false,done:false
+  }).then(()=>{inp.value='';setSync('✅ Guardado',true);})
+  .catch(()=>setSync('❌ Error al guardar'));
+}
+
+function deleteItem(type,id){
+  if(!confirm('¿Eliminar esta entrada?'))return;
+  db.collection(type).doc(id).delete()
+    .then(()=>setSync('🗑️ Eliminado',true))
+    .catch(console.error);
+}
+
+function startEdit(type,id,currentText){
+  const itemEl=document.getElementById('item-'+id);
+  const bodyEl=itemEl.querySelector('.item-body');
+  const originalHTML=bodyEl.innerHTML;
+  bodyEl.innerHTML=
+    '<textarea class="edit-input" id="edit-'+id+'">'+currentText+'</textarea>'+
+    '<div class="edit-actions">'+
+    '<button class="save-btn" onclick="saveEdit(\''+type+'\',\''+id+'\')">💾 Guardar</button>'+
+    '<button class="cancel-btn" onclick="cancelEdit(\''+id+'\',`'+encodeURIComponent(originalHTML)+'`)">Cancelar</button>'+
+    '</div>';
+}
+
+function saveEdit(type,id){
+  const txt=document.getElementById('edit-'+id).value.trim();
+  if(!txt)return;
+  db.collection(type).doc(id).update({text:txt})
+    .then(()=>setSync('✅ Actualizado',true))
+    .catch(()=>setSync('❌ Error al actualizar'));
+}
+
+function cancelEdit(id,encodedHTML){
+  const itemEl=document.getElementById('item-'+id);
+  itemEl.querySelector('.item-body').innerHTML=decodeURIComponent(encodedHTML);
+}
+
+function toggleAnswered(id){
+  db.collection('oracion').doc(id).get().then(s=>{
+    if(s.exists)db.collection('oracion').doc(id).update({answered:!s.data().answered});
+  });
+}
+
+function toggleDone(id){
+  db.collection('metas').doc(id).get().then(s=>{
+    if(s.exists)db.collection('metas').doc(id).update({done:!s.data().done});
+  });
+}
+</script>
+<script>
+function renderItems(type,items){
+  if(type==='metas'){renderMetas(items);return;}
+  if(type==='aliento'){renderAliento(items);return;}
+  const el=document.getElementById(type+'-list');if(!el)return;
+  const list=items.filter(i=>!i.answered);
+  if(!list.length){el.innerHTML='<p class="empty">Aún no hay entradas 🌿</p>';return;}
+  el.innerHTML=list.map(i=>
+    '<div class="item" id="item-'+i.id+'">'+
+    '<div class="item-body">'+whoTag(i.user)+
+    '<div class="item-text">'+i.text+'</div>'+
+    '<div class="item-meta">'+i.date+'</div></div>'+
+    '<div class="item-actions">'+
+    (type==='oracion'?'<button class="ico-btn" title="Respondida" onclick="toggleAnswered(\''+i.id+'\')">✅</button>':'')+
+    (i.user===currentUser?'<button class="ico-btn" title="Editar" onclick="startEdit(\''+type+'\',\''+i.id+'\',\''+encodeURIComponent(i.text)+'\')">✏️</button>':'')+
+    (i.user===currentUser?'<button class="ico-btn" title="Eliminar" onclick="deleteItem(\''+type+'\',\''+i.id+'\')">🗑️</button>':'')+
+    '</div></div>').join('');
+}
+
+function renderMetas(items){
+  const el=document.getElementById('metas-list');
+  if(!items.length){el.innerHTML='<p class="empty">Añade tu primera meta 🎯</p>';return;}
+  el.innerHTML=items.map(i=>
+    '<div class="meta-item" id="item-'+i.id+'">'+
+    whoTag(i.user)+
+    '<input type="checkbox" id="m'+i.id+'" '+(i.done?'checked':'')+' onchange="toggleDone(\''+i.id+'\')"/>'+
+    '<label for="m'+i.id+'" class="'+(i.done?'done':'')+'">'+i.text+'</label>'+
+    (i.user===currentUser?'<button class="ico-btn" onclick="startEdit(\'metas\',\''+i.id+'\',\''+encodeURIComponent(i.text)+'\')">✏️</button>':'')+
+    (i.user===currentUser?'<button class="ico-btn" onclick="deleteItem(\'metas\',\''+i.id+'\')">🗑️</button>':'')+
+    '</div>').join('');
+}
+
+function renderAliento(items){
+  const el=document.getElementById('aliento-list');
+  if(!items.length){el.innerHTML='<p class="empty">Sé el primero en dejar un mensaje 💌</p>';return;}
+  el.innerHTML=items.map(i=>
+    '<div class="msg-item '+(i.user===currentUser?(i.user==='luismi'?'mine':'mine-lia'):'theirs')+'" id="item-'+i.id+'">'+
+    '<div class="msg-who" style="color:'+USERS[i.user].pri+'">'+USERS[i.user].emoji+' '+USERS[i.user].name+'</div>'+
+    '<div class="msg-text">'+i.text+'</div>'+
+    '<div style="font-size:.72rem;color:#555;margin-top:.3rem;display:flex;justify-content:space-between;align-items:center">'+
+    '<span>'+i.date+'</span>'+
+    (i.user===currentUser?
+      '<span>'+
+      '<button class="ico-btn" style="font-size:.8rem" onclick="startEdit(\'aliento\',\''+i.id+'\',\''+encodeURIComponent(i.text)+'\')">✏️</button>'+
+      '<button class="ico-btn" style="font-size:.8rem" onclick="deleteItem(\'aliento\',\''+i.id+'\')">🗑️</button>'+
+      '</span>':'')+
+    '</div></div>').join('');
+}
+
+function renderAnswered(items){
+  const el=document.getElementById('answered-list');if(!el)return;
+  const ans=items.filter(i=>i.answered);
+  if(!ans.length){el.innerHTML='<p class="empty">Las respondidas aparecerán aquí 🙌</p>';return;}
+  el.innerHTML=ans.map(i=>
+    '<div class="item" style="border-left-color:#FFDDAA;opacity:.8" id="item-'+i.id+'">'+
+    '<div class="item-body">'+whoTag(i.user)+
+    '<div class="item-text">🎉 '+i.text+'</div>'+
+    '<div class="item-meta">'+i.date+'</div></div>'+
+    '<button class="ico-btn" onclick="deleteItem(\'oracion\',\''+i.id+'\')">🗑️</button>'+
+    '</div>').join('');
+}
+
+function checkRacha(u){
+  const today=nowDate(),ref=db.collection('racha').doc('shared');
+  ref.get().then(snap=>{
+    let r=snap.exists?snap.data():{dias:0,luismi:false,lia:false,lastDate:''};
+    if(r.lastDate!==today){r.luismi=false;r.lia=false;r.lastDate=today;}
+    if(r[u])return;
+    r[u]=true;
+    if(r.luismi&&r.lia)r.dias++;
+    ref.set(r);
+  });
+}
+
+function renderRacha(r){
+  if(!r)r={dias:0,luismi:false,lia:false,lastDate:''};
+  const today=nowDate();
+  if(r.lastDate!==today){r.luismi=false;r.lia=false;}
+  document.getElementById('racha-num').textContent=r.dias;
+  const checked=r[currentUser];
+  const btns=document.getElementById('racha-btns');
+  btns.innerHTML=
+    '<button class="racha-btn rb-'+currentUser+(checked?' checked':'')+'" '+
+    (checked?'disabled':'')+' onclick="checkRacha(\''+currentUser+'\')">'+
+    USERS[currentUser].emoji+' '+(checked?USERS[currentUser].name+' ✓':USERS[currentUser].name+' oró hoy')+
+    '</button>';
+  document.getElementById('racha-checks').innerHTML=
+    (r.luismi?'❤️ ':'🤍 ')+(r.lia?'🩷':'🩶');
+}
+
+function renderStatic(){
+  const d=new Date().getDay();
+  const v=VERSES[d%VERSES.length];
+  document.getElementById('verse-text').textContent='"'+v.t+'"';
+  document.getElementById('verse-ref').textContent='— '+v.r;
+  const dv=DEVOS[d%DEVOS.length];
+  document.getElementById('devo-title').textContent=dv.title;
+  document.getElementById('devo-text').textContent=dv.text;
+}
+
+function initApp(){
+  renderStatic();
+  ['oracion','palabra','gratitud','aliento','metas','devo'].forEach(function(type){
+    const u=db.collection(type).orderBy('ts','desc').onSnapshot(function(snap){
+      const items=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+      renderItems(type,items);
+      if(type==='oracion')renderAnswered(items);
+    });
+    unsubs.push(u);
+  });
+  const ur=db.collection('racha').doc('shared').onSnapshot(function(snap){
+    renderRacha(snap.exists?snap.data():null);
+  });
+  unsubs.push(ur);
+  setSync('🔥 Conectado en tiempo real',true);
+}
+</script>
+</body>
+</html>
